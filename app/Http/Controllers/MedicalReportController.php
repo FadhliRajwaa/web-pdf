@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\MedicalReport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class MedicalReportController extends Controller
@@ -122,17 +123,64 @@ class MedicalReportController extends Controller
      */
     public function destroy(MedicalReport $report)
     {
-        // Delete associated files
-        if ($report->logo_path) {
-            Storage::disk('public')->delete($report->logo_path);
-        }
-        if ($report->signature_path) {
+        // Delete uploaded files if they exist
+        if ($report->signature_path && Storage::disk('public')->exists($report->signature_path)) {
             Storage::disk('public')->delete($report->signature_path);
         }
 
         $report->delete();
 
-        return redirect()->route('reports.index')->with('success', 'Laporan medis berhasil dihapus!');
+        // Auto-reorder IDs after deletion
+        $this->reorderIds();
+
+        return redirect()->route('reports.index')->with('success', 'Laporan medis berhasil dihapus dan ID diurutkan ulang!');
+    }
+
+    /**
+     * Reorder IDs to be sequential starting from 1
+     */
+    private function reorderIds()
+    {
+        try {
+            // Get all records ordered by created_at to maintain chronological order
+            $reports = MedicalReport::orderBy('created_at')->get();
+            
+            if ($reports->isEmpty()) {
+                // If no records, just reset auto increment to 1
+                DB::statement('ALTER TABLE medical_reports AUTO_INCREMENT = 1');
+                return;
+            }
+            
+            // Disable foreign key checks
+            DB::statement('SET FOREIGN_KEY_CHECKS=0');
+            
+            // Backup data without IDs
+            $backupData = [];
+            foreach ($reports as $report) {
+                $reportArray = $report->toArray();
+                unset($reportArray['id']); // Remove ID
+                $backupData[] = $reportArray;
+            }
+            
+            // Truncate table (resets auto increment)
+            DB::statement('TRUNCATE TABLE medical_reports');
+            
+            // Explicitly reset auto increment to 1
+            DB::statement('ALTER TABLE medical_reports AUTO_INCREMENT = 1');
+            
+            // Insert back with new sequential IDs
+            foreach ($backupData as $data) {
+                MedicalReport::create($data);
+            }
+            
+            // Re-enable foreign key checks
+            DB::statement('SET FOREIGN_KEY_CHECKS=1');
+            
+        } catch (\Exception $e) {
+            // Re-enable foreign key checks if error occurred
+            DB::statement('SET FOREIGN_KEY_CHECKS=1');
+            \Log::error('ID Reordering failed: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -140,8 +188,10 @@ class MedicalReportController extends Controller
      */
     public function generatePdf(MedicalReport $report)
     {
-        // Debug: Check what data we have
-        dd($report->toArray()); // Uncomment to debug
+        // Check if record exists
+        if (!$report->exists) {
+            return redirect()->route('reports.index')->with('error', 'Laporan medis tidak ditemukan!');
+        }
         
         $pdf = Pdf::loadView('reports.pdf', ['medicalReport' => $report]);
         

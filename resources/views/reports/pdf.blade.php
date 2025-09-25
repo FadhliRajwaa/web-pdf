@@ -341,7 +341,7 @@
         
         <!-- Footer -->
         <div class="footer">
-            Laporan ini dibuat secara elektronik pada {{ $medicalReport->created_at ? $medicalReport->created_at->format('d F Y H:i') : date('d F Y H:i') }} WIB
+            Laporan ini dibuat secara elektronik pada {{ now()->format('d F Y H:i') }} WIB
         </div>
     </div>
 </body>
