@@ -2,11 +2,28 @@
 
 echo "Starting Laravel application setup..."
 
-# Wait for database to be ready if using external database
-if [ ! -z "$DATABASE_URL" ]; then
-    echo "Waiting for database connection..."
-    php artisan migrate --force
-fi
+# Wait for database to be ready
+echo "Waiting for database connection..."
+max_attempts=30
+attempt=1
+
+while [ $attempt -le $max_attempts ]; do
+    echo "Database connection attempt $attempt/$max_attempts"
+    if php artisan migrate:status --no-interaction > /dev/null 2>&1; then
+        echo "Database connection established!"
+        break
+    fi
+    if [ $attempt -eq $max_attempts ]; then
+        echo "Database connection failed after $max_attempts attempts"
+        exit 1
+    fi
+    sleep 2
+    attempt=$((attempt + 1))
+done
+
+# Run migrations
+echo "Running database migrations..."
+php artisan migrate --force --no-interaction
 
 # Generate application key if not exists
 php artisan key:generate --no-interaction

@@ -15,11 +15,34 @@ services:
       - key: LOG_LEVEL
         value: error
       - key: SESSION_DRIVER
-        value: file
-      - key: CACHE_DRIVER
-        value: file
+        value: database
+      - key: CACHE_STORE
+        value: database
       - key: QUEUE_CONNECTION
-        value: sync
+        value: database
+      # Database connection
+      - key: DB_CONNECTION
+        value: mysql
+      - key: DB_HOST
+        fromDatabase:
+          name: sistem-laporan-medis-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: sistem-laporan-medis-db
+          property: port
+      - key: DB_DATABASE
+        fromDatabase:
+          name: sistem-laporan-medis-db
+          property: database
+      - key: DB_USERNAME
+        fromDatabase:
+          name: sistem-laporan-medis-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: sistem-laporan-medis-db
+          property: password
     buildCommand: echo "Build completed in Dockerfile"
     startCommand: /usr/local/bin/startup.sh
 
