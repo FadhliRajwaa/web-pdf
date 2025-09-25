@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Laporan Medis - {{ $medicalReport->pasien ?? 'Laporan Medis' }}</title>
+    <title>Laporan Medis - {{ $medicalReport->pasien ?? 'Pasien' }}</title>
     <style>
         * {
             margin: 0;
@@ -12,288 +12,384 @@
         }
         
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            font-size: 12px;
-            line-height: 1.5;
-            color: #9A3F3F;
-            margin: 0;
-            padding: 25px;
-            background: #FBF9D1;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #2d3748;
+            background: linear-gradient(135deg, #FBF9D1 0%, #E6CFA9 100%);
+            padding: 20px;
         }
         
-        .header {
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(154, 63, 63, 0.1);
+            overflow: hidden;
+        }
+        
+        /* Hospital Header */
+        .hospital-header {
+            background: linear-gradient(135deg, #9A3F3F 0%, #C1856D 100%);
+            color: white;
             text-align: center;
-            border-bottom: 3px solid #9A3F3F;
-            padding-bottom: 20px;
-            margin-bottom: 30px;
-            background: linear-gradient(135deg, #FBF9D1 0%, #E6CFA9 100%);
-            padding: 25px;
-            border-radius: 8px 8px 0 0;
-            box-shadow: 0 2px 4px rgba(154, 63, 63, 0.1);
+            padding: 25px 20px;
+            position: relative;
+        }
+        
+        .hospital-header::before {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            right: 0;
+            height: 20px;
+            background: white;
+            border-radius: 20px 20px 0 0;
+        }
+        
+        .hospital-name {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 3px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .hospital-title {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .hospital-address {
+            font-size: 13px;
+            opacity: 0.95;
+            line-height: 1.4;
+        }
+        
+        /* Report Header */
+        .report-header {
+            text-align: center;
+            padding: 30px 20px 20px;
+            background: linear-gradient(135deg, #E6CFA9 0%, #FBF9D1 100%);
         }
         
         .report-title {
-            font-size: 22px;
-            font-weight: 700;
-            text-transform: uppercase;
+            font-size: 28px;
+            font-weight: 800;
             color: #9A3F3F;
-            margin-bottom: 10px;
-            letter-spacing: 2px;
-            text-shadow: 1px 1px 2px rgba(193, 133, 109, 0.3);
+            margin-bottom: 8px;
+            text-shadow: 0 2px 4px rgba(154, 63, 63, 0.1);
         }
         
         .report-subtitle {
-            font-size: 14px;
+            font-size: 16px;
             color: #C1856D;
-            margin-bottom: 5px;
-            font-weight: 500;
+            font-weight: 600;
+        }
+        
+        /* Content */
+        .content {
+            padding: 30px;
         }
         
         .section {
-            margin-bottom: 20px;
+            margin-bottom: 25px;
+            background: linear-gradient(135deg, #FBF9D1 0%, #E6CFA9 100%);
+            border-radius: 12px;
+            padding: 20px;
+            border-left: 5px solid #9A3F3F;
+            box-shadow: 0 4px 12px rgba(154, 63, 63, 0.08);
         }
         
         .section-title {
-            font-size: 15px;
-            font-weight: 600;
+            font-size: 18px;
+            font-weight: 700;
             color: #9A3F3F;
             margin-bottom: 15px;
-            padding-bottom: 8px;
-            border-bottom: 2px solid #E6CFA9;
-            background: linear-gradient(90deg, #E6CFA9 0%, transparent 50%);
-            padding-left: 10px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-title::before {
+            content: '';
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(135deg, #9A3F3F, #C1856D);
+            border-radius: 50%;
+            margin-right: 10px;
         }
         
         .info-grid {
-            display: table;
-            width: 100%;
-            border-collapse: collapse;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 12px;
         }
         
         .info-row {
-            display: table-row;
+            display: flex;
+            align-items: center;
+            padding: 8px 0;
         }
         
         .info-label {
-            display: table-cell;
-            width: 150px;
-            padding: 8px 10px 8px 5px;
             font-weight: 600;
-            vertical-align: top;
             color: #9A3F3F;
-            border-bottom: 1px solid #E6CFA9;
-            background: rgba(230, 207, 169, 0.1);
+            min-width: 140px;
+            flex-shrink: 0;
         }
         
         .info-colon {
-            display: table-cell;
-            width: 15px;
-            padding: 8px 5px;
-            vertical-align: top;
+            margin: 0 8px;
             color: #C1856D;
-            border-bottom: 1px solid #E6CFA9;
             font-weight: 600;
         }
         
         .info-value {
-            display: table-cell;
-            padding: 8px 0 8px 10px;
-            vertical-align: top;
-            color: #9A3F3F;
-            border-bottom: 1px solid #E6CFA9;
+            color: #2d3748;
             font-weight: 500;
         }
         
         .content-box {
-            background: linear-gradient(135deg, #FBF9D1 0%, #E6CFA9 10%, #FBF9D1 100%);
-            border: 2px solid #C1856D;
+            background: white;
+            border-radius: 10px;
             padding: 20px;
-            margin: 15px 0;
-            border-radius: 8px;
+            border: 2px solid #E6CFA9;
             line-height: 1.8;
-            box-shadow: 0 3px 6px rgba(193, 133, 109, 0.15);
-            color: #9A3F3F;
+            color: #2d3748;
+            box-shadow: 0 4px 12px rgba(154, 63, 63, 0.05);
         }
         
+        /* Signature Section */
         .signature-section {
-            margin-top: 40px;
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
+            margin-top: 40px;
+            padding: 25px;
+            background: linear-gradient(135deg, #E6CFA9 0%, #FBF9D1 100%);
+            border-radius: 12px;
+            border: 2px solid #C1856D;
         }
         
         .date-location {
-            flex: 1;
+            font-size: 14px;
+            color: #9A3F3F;
+            font-weight: 600;
         }
         
         .signature-box {
-            flex: 1;
             text-align: center;
-            max-width: 200px;
-            margin-left: auto;
+            min-width: 200px;
+        }
+        
+        .signature-title {
+            font-size: 14px;
+            color: #9A3F3F;
+            font-weight: 600;
+            margin-bottom: 15px;
         }
         
         .signature-image {
-            max-height: 60px;
             max-width: 150px;
-            margin: 15px 0;
+            max-height: 80px;
+            object-fit: contain;
+            margin: 10px 0;
+        }
+        
+        .signature-space {
+            height: 80px;
+            border-bottom: 2px solid #C1856D;
+            margin: 10px 0;
+            width: 150px;
+            margin-left: auto;
+            margin-right: auto;
         }
         
         .doctor-info {
-            border-top: 2px solid #9A3F3F;
-            padding-top: 10px;
-            margin-top: 20px;
-            background: rgba(230, 207, 169, 0.2);
-            padding: 10px;
-            border-radius: 4px;
+            margin-top: 15px;
         }
         
         .doctor-name {
             font-weight: 700;
             color: #9A3F3F;
-            font-size: 13px;
-            text-transform: uppercase;
+            font-size: 16px;
+            margin-bottom: 4px;
         }
         
         .doctor-title {
-            font-size: 12px;
             color: #C1856D;
-            margin-top: 3px;
-            font-weight: 500;
+            font-size: 14px;
+            font-weight: 600;
         }
         
+        /* Footer */
         .footer {
-            margin-top: 40px;
             text-align: center;
-            font-size: 10px;
-            color: #C1856D;
-            border-top: 2px solid #E6CFA9;
-            padding-top: 15px;
-            background: linear-gradient(90deg, transparent, #E6CFA9, transparent);
+            padding: 20px;
+            background: linear-gradient(135deg, #9A3F3F 0%, #C1856D 100%);
+            color: white;
+            font-size: 12px;
+            margin-top: 30px;
+            border-radius: 0 0 15px 15px;
+        }
+        
+        /* Modern styling */
+        .highlight-box {
+            background: linear-gradient(135deg, #9A3F3F 0%, #C1856D 100%);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-weight: 600;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(154, 63, 63, 0.2);
+        }
+        
+        .empty-field {
+            color: #9CA3AF;
             font-style: italic;
+        }
+        
+        @media print {
+            body { 
+                background: white; 
+                padding: 0;
+            }
+            .container {
+                box-shadow: none;
+                border-radius: 0;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Hospital Header -->
-    <div style="text-align: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid #9A3F3F;">
-        <div style="font-size: 14px; font-weight: 600; color: #9A3F3F; margin-bottom: 3px;">Yayasan Kristen untuk Kesehatan Umum (YAKKUM)</div>
-        <div style="font-size: 18px; font-weight: 700; color: #9A3F3F; margin-bottom: 5px;">RS MARDI WALUYO</div>
-        <div style="font-size: 12px; color: #C1856D; margin-bottom: 2px;">Jl. Jendral Sudirman No 156 Metro</div>
-        <div style="font-size: 12px; color: #C1856D; margin-bottom: 3px;">Kota Metro 34111</div>
-        <div style="font-size: 11px; color: #C1856D;">Telepon (0752) 42512 Fax: (0725) 43053</div>
-    </div>
-    
-    <!-- Header -->
-    <div class="header">
-        <div class="report-title">LAPORAN MEDIS</div>
-        <div class="report-subtitle">Hasil Pemeriksaan Radiologi</div>
-    </div>
-
-    <!-- Data Pemeriksaan -->
-    @if($medicalReport->tgl_periksa || $medicalReport->pasien || $medicalReport->dokter_pengirim || $medicalReport->jenis_pemeriksaan || $medicalReport->no_foto || $medicalReport->no_rm || $medicalReport->no_reg || $medicalReport->kel || $medicalReport->kamar_klinik)
-    <div class="section">
-        <div class="section-title">Data Pemeriksaan</div>
-        <div class="info-grid">
-            @if($medicalReport->tgl_periksa)
-                <div class="info-row">
-                    <div class="info-label">Tanggal Periksa</div>
-                    <div class="info-colon">:</div>
-                    <div class="info-value">{{ $medicalReport->tgl_periksa ? $medicalReport->tgl_periksa->format('d F Y') : 'Tidak diisi' }}</div>
-                </div>
-            @endif
-            @if($medicalReport->pasien)
-                <div class="info-row">
-                    <div class="info-label">Pasien</div>
-                    <div class="info-colon">:</div>
-                    <div class="info-value">{{ $medicalReport->pasien }}</div>
-                </div>
-            @endif
-            @if($medicalReport->dokter_pengirim)
-                <div class="info-row">
-                    <div class="info-label">Dokter Pengirim</div>
-                    <div class="info-colon">:</div>
-                    <div class="info-value">{{ $medicalReport->dokter_pengirim }}</div>
-                </div>
-            @endif
-            @if($medicalReport->jenis_pemeriksaan)
-                <div class="info-row">
-                    <div class="info-label">Jenis Pemeriksaan</div>
-                    <div class="info-colon">:</div>
-                    <div class="info-value">{{ $medicalReport->jenis_pemeriksaan }}</div>
-                </div>
-            @endif
-            @if($medicalReport->no_foto)
-                <div class="info-row">
-                    <div class="info-label">No Foto</div>
-                    <div class="info-colon">:</div>
-                    <div class="info-value">{{ $medicalReport->no_foto }}</div>
-                </div>
-            @endif
-            @if($medicalReport->no_rm)
-                <div class="info-row">
-                    <div class="info-label">No RM</div>
-                    <div class="info-colon">:</div>
-                    <div class="info-value">{{ $medicalReport->no_rm }}</div>
-                </div>
-            @endif
-            @if($medicalReport->no_reg)
-                <div class="info-row">
-                    <div class="info-label">No REG</div>
-                    <div class="info-colon">:</div>
-                    <div class="info-value">{{ $medicalReport->no_reg }}</div>
-                </div>
-            @endif
-            @if($medicalReport->kel)
-                <div class="info-row">
-                    <div class="info-label">Kel</div>
-                    <div class="info-colon">:</div>
-                    <div class="info-value">{{ $medicalReport->kel }}</div>
-                </div>
-            @endif
-            @if($medicalReport->kamar_klinik)
-                <div class="info-row">
-                    <div class="info-label">Kamar/Klinik</div>
-                    <div class="info-colon">:</div>
-                    <div class="info-value">{{ $medicalReport->kamar_klinik }}</div>
-                </div>
-            @endif
-        </div>
-    </div>
-    @endif
-
-    <!-- Hasil Pemeriksaan -->
-    <div class="section">
-        <div class="section-title">Hasil Pemeriksaan</div>
-        <div class="content-box">
-            {!! nl2br(e($medicalReport->hasil_pemeriksaan)) !!}
-        </div>
-    </div>
-
-    <!-- Tanda Tangan -->
-    <div class="signature-section">
-        <div class="date-location">
-            {{ $medicalReport->created_at ? $medicalReport->created_at->format('d F Y') : date('d F Y') }}
-        </div>
-        <div class="signature-box">
-            <div style="margin-bottom: 10px;">Dokter Pemeriksa,</div>
-            
-            @if($medicalReport->signature_path)
-                <img src="{{ public_path('storage/' . $medicalReport->signature_path) }}" alt="Tanda Tangan" class="signature-image">
-            @else
-                <div style="height: 60px; margin: 15px 0;"></div>
-            @endif
-            
-            <div class="doctor-info">
-                <div class="doctor-name">{{ $medicalReport->dokter_pemeriksa }}</div>
-                <div class="doctor-title">{{ $medicalReport->nama_terang }}</div>
+    <div class="container">
+        <!-- Hospital Header -->
+        <div class="hospital-header">
+            <div class="hospital-name">Yayasan Kristen untuk Kesehatan Umum (YAKKUM)</div>
+            <div class="hospital-title">RS MARDI WALUYO</div>
+            <div class="hospital-address">
+                Jl. Jendral Sudirman No 156 Metro<br>
+                Kota Metro 34111<br>
+                Telepon (0752) 42512 Fax: (0725) 43053
             </div>
         </div>
-    </div>
+        
+        <!-- Report Header -->
+        <div class="report-header">
+            <div class="report-title">LAPORAN MEDIS</div>
+            <div class="report-subtitle">Hasil Pemeriksaan Radiologi</div>
+        </div>
 
-    <!-- Footer -->
-    <div class="footer">
-        Laporan ini dibuat secara elektronik pada {{ $medicalReport->created_at ? $medicalReport->created_at->format('d F Y H:i') : date('d F Y H:i') }} WIB
+        <div class="content">
+            <!-- Data Pemeriksaan -->
+            @if($medicalReport->tgl_periksa || $medicalReport->pasien || $medicalReport->dokter_pengirim || $medicalReport->jenis_pemeriksaan || $medicalReport->no_foto || $medicalReport->no_rm || $medicalReport->no_reg || $medicalReport->kel || $medicalReport->kamar_klinik)
+            <div class="section">
+                <div class="section-title">Data Pemeriksaan</div>
+                <div class="info-grid">
+                    @if($medicalReport->tgl_periksa)
+                        <div class="info-row">
+                            <div class="info-label">Tanggal Periksa</div>
+                            <div class="info-colon">:</div>
+                            <div class="info-value">{{ $medicalReport->tgl_periksa->format('d F Y') }}</div>
+                        </div>
+                    @endif
+                    @if($medicalReport->pasien)
+                        <div class="info-row">
+                            <div class="info-label">Nama Pasien</div>
+                            <div class="info-colon">:</div>
+                            <div class="info-value">{{ $medicalReport->pasien }}</div>
+                        </div>
+                    @endif
+                    @if($medicalReport->no_rm)
+                        <div class="info-row">
+                            <div class="info-label">No. Rekam Medis</div>
+                            <div class="info-colon">:</div>
+                            <div class="info-value">{{ $medicalReport->no_rm }}</div>
+                        </div>
+                    @endif
+                    @if($medicalReport->no_reg)
+                        <div class="info-row">
+                            <div class="info-label">No. Registrasi</div>
+                            <div class="info-colon">:</div>
+                            <div class="info-value">{{ $medicalReport->no_reg }}</div>
+                        </div>
+                    @endif
+                    @if($medicalReport->kel)
+                        <div class="info-row">
+                            <div class="info-label">Jenis Kelamin</div>
+                            <div class="info-colon">:</div>
+                            <div class="info-value">{{ $medicalReport->kel }}</div>
+                        </div>
+                    @endif
+                    @if($medicalReport->kamar_klinik)
+                        <div class="info-row">
+                            <div class="info-label">Kamar/Klinik</div>
+                            <div class="info-colon">:</div>
+                            <div class="info-value">{{ $medicalReport->kamar_klinik }}</div>
+                        </div>
+                    @endif
+                    @if($medicalReport->jenis_pemeriksaan)
+                        <div class="info-row">
+                            <div class="info-label">Jenis Pemeriksaan</div>
+                            <div class="info-colon">:</div>
+                            <div class="info-value">{{ $medicalReport->jenis_pemeriksaan }}</div>
+                        </div>
+                    @endif
+                    @if($medicalReport->no_foto)
+                        <div class="info-row">
+                            <div class="info-label">No. Foto</div>
+                            <div class="info-colon">:</div>
+                            <div class="info-value">{{ $medicalReport->no_foto }}</div>
+                        </div>
+                    @endif
+                    @if($medicalReport->dokter_pengirim)
+                        <div class="info-row">
+                            <div class="info-label">Dokter Pengirim</div>
+                            <div class="info-colon">:</div>
+                            <div class="info-value">{{ $medicalReport->dokter_pengirim }}</div>
+                        </div>
+                    @endif
+                </div>
+            </div>
+            @endif
+
+            <!-- Hasil Pemeriksaan -->
+            <div class="section">
+                <div class="section-title">Hasil Pemeriksaan</div>
+                <div class="content-box">
+                    {!! nl2br(e($medicalReport->hasil_pemeriksaan)) !!}
+                </div>
+            </div>
+
+            <!-- Signature Section -->
+            <div class="signature-section">
+                <div class="date-location">
+                    Metro, {{ $medicalReport->created_at ? $medicalReport->created_at->format('d F Y') : date('d F Y') }}
+                </div>
+                <div class="signature-box">
+                    <div class="signature-title">Dokter Pemeriksa,</div>
+                    
+                    @if($medicalReport->signature_path)
+                        <img src="{{ public_path('storage/' . $medicalReport->signature_path) }}" alt="Tanda Tangan" class="signature-image">
+                    @else
+                        <div class="signature-space"></div>
+                    @endif
+                    
+                    <div class="doctor-info">
+                        <div class="doctor-name">{{ $medicalReport->dokter_pemeriksa }}</div>
+                        <div class="doctor-title">{{ $medicalReport->nama_terang }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            Laporan ini dibuat secara elektronik pada {{ $medicalReport->created_at ? $medicalReport->created_at->format('d F Y H:i') : date('d F Y H:i') }} WIB
+        </div>
     </div>
 </body>
 </html>
