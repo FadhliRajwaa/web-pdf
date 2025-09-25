@@ -199,7 +199,7 @@
                 <div class="info-row">
                     <div class="info-label">Tanggal Periksa</div>
                     <div class="info-colon">:</div>
-                    <div class="info-value">{{ $medicalReport->tgl_periksa->format('d F Y') }}</div>
+                    <div class="info-value">{{ $medicalReport->tgl_periksa ? $medicalReport->tgl_periksa->format('d F Y') : 'Tidak diisi' }}</div>
                 </div>
             @endif
             @if($medicalReport->pasien)
@@ -273,7 +273,7 @@
     <!-- Tanda Tangan -->
     <div class="signature-section">
         <div class="date-location">
-            {{ $medicalReport->created_at->format('d F Y') }}
+            {{ $medicalReport->created_at ? $medicalReport->created_at->format('d F Y') : date('d F Y') }}
         </div>
         <div class="signature-box">
             <div style="margin-bottom: 10px;">Dokter Pemeriksa,</div>
@@ -293,7 +293,7 @@
 
     <!-- Footer -->
     <div class="footer">
-        Laporan ini dibuat secara elektronik pada {{ $medicalReport->created_at->format('d F Y H:i') }} WIB
+        Laporan ini dibuat secara elektronik pada {{ $medicalReport->created_at ? $medicalReport->created_at->format('d F Y H:i') : date('d F Y H:i') }} WIB
     </div>
 </body>
 </html>
