@@ -16,8 +16,8 @@ php artisan config:cache
 php artisan route:cache
 php artisan view:cache
 
-# Create storage symlink if not exists
-php artisan storage:link || true
+# Create storage symlink if not exists (ignore if already exists)
+php artisan storage:link 2>/dev/null || echo "Storage link already exists"
 
 # Set proper permissions
 chown -R www-data:www-data /var/www/html/storage
