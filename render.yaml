@@ -20,38 +20,8 @@ services:
         value: database
       - key: QUEUE_CONNECTION
         value: database
-      # Database connection
+      # Database configuration - Set via Render Dashboard Environment Variables
       - key: DB_CONNECTION
         value: mysql
-      - key: DB_HOST
-        fromDatabase:
-          name: sistem-laporan-medis-db
-          property: host
-      - key: DB_PORT
-        fromDatabase:
-          name: sistem-laporan-medis-db
-          property: port
-      - key: DB_DATABASE
-        fromDatabase:
-          name: sistem-laporan-medis-db
-          property: database
-      - key: DB_USERNAME
-        fromDatabase:
-          name: sistem-laporan-medis-db
-          property: user
-      - key: DB_PASSWORD
-        fromDatabase:
-          name: sistem-laporan-medis-db
-          property: password
     buildCommand: echo "Build completed in Dockerfile"
     startCommand: /usr/local/bin/startup.sh
-
-  - type: pserv
-    name: sistem-laporan-medis-db
-    env: mysql
-    plan: starter
-    databases:
-      - name: sistem_laporan_medis
-    envVars:
-      - key: MYSQL_DATABASE
-        value: sistem_laporan_medis
