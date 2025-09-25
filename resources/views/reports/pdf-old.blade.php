@@ -235,6 +235,18 @@
             border-radius: 0 0 15px 15px;
         }
         
+        /* Modern styling */
+        .highlight-box {
+            background: linear-gradient(135deg, #9A3F3F 0%, #C1856D 100%);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-weight: 600;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(154, 63, 63, 0.2);
+        }
+        
         .empty-field {
             color: #9CA3AF;
             font-style: italic;
