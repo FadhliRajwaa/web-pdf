@@ -140,7 +140,16 @@ class MedicalReportController extends Controller
      */
     public function generatePdf(MedicalReport $report)
     {
+        // Debug: Check what data we have
+        dd($report->toArray()); // Uncomment to debug
+        
         $pdf = Pdf::loadView('reports.pdf', ['medicalReport' => $report]);
-        return $pdf->download('laporan-medis-' . $report->id . '.pdf');
+        
+        // Generate filename with date and time
+        $filename = 'laporan-medis-' . 
+                   ($report->pasien ? str_replace(' ', '-', $report->pasien) : 'report') . 
+                   '-' . now()->format('d-m-Y_H-i-s') . '.pdf';
+        
+        return $pdf->download($filename);
     }
 }
