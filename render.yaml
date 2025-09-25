@@ -1,0 +1,34 @@
+services:
+  - type: web
+    name: sistem-laporan-medis
+    env: docker
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: APP_NAME
+        value: Sistem Laporan Medis
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: false
+      - key: APP_KEY
+        generateValue: true
+      - key: LOG_LEVEL
+        value: error
+      - key: SESSION_DRIVER
+        value: file
+      - key: CACHE_DRIVER
+        value: file
+      - key: QUEUE_CONNECTION
+        value: sync
+    buildCommand: echo "Build completed in Dockerfile"
+    startCommand: /usr/local/bin/startup.sh
+
+  - type: pserv
+    name: sistem-laporan-medis-db
+    env: mysql
+    plan: starter
+    databases:
+      - name: sistem_laporan_medis
+    envVars:
+      - key: MYSQL_DATABASE
+        value: sistem_laporan_medis
